@@ -115,10 +115,13 @@ while read -r -u "${COPROC[0]}" -- _ _ event devpath _; do
     } | yad --text-info "${yadgeo[@]}" --title 'Mount: option' --button="Cancel:$cancel" --button="R/O:$rdonly" --button="OK (R/W):$rdwr" --listen --wrap
     ret="$?"
     mopt="$defmopts"
-    if [ "$ret" -eq "$cancel" ]; then
-	continue
+    if [ "$ret" -eq "$rdwr" ]; then
+	:
     elif [ "$ret" -eq "$rdonly" ]; then
 	mopt="$mopt,ro"
+    else
+	# Cancel / Others (error, ...)
+	continue
     fi
     msg="$(udisksctl mount --block-device "$dir$file" --no-user-interaction ${mopt:+-o $mopt} 2>&1)"
     ret="$?"
